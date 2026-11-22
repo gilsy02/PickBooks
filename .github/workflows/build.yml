@@ -22,7 +22,31 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: flutter build apk --release --target-platform android-arm64
+      # 출시용 서명 키: Secrets가 등록돼 있으면 key.properties를 만들고, 없으면 개발용 키로 서명된다.
+      - name: Prepare release signing
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PW: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > android/app/upload.jks
+            printf 'storeFile=upload.jks\nstorePassword=%s\nkeyPassword=%s\nkeyAlias=%s\n' "$STORE_PW" "$KEY_PW" "$KEY_ALIAS" > android/key.properties
+            echo "SIGNED=release" >> $GITHUB_ENV
+          else
+            echo "출시용 키 없음: 개발용 키로 서명"
+            echo "SIGNED=debug" >> $GITHUB_ENV
+          fi
+      - run: flutter build apk --release --target-platform android-arm64 --dart-define=YES24_PROXY_URL=${{ vars.YES24_PROXY_URL }}
+      # 플레이스토어 업로드용(AAB): 출시용 키가 있을 때만 만든다.
+      - if: env.SIGNED == 'release'
+        run: flutter build appbundle --release --dart-define=YES24_PROXY_URL=${{ vars.YES24_PROXY_URL }}
+      - if: env.SIGNED == 'release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pickbooks-play-aab
+          path: build/app/outputs/bundle/release/app-release.aab
       - uses: actions/upload-artifact@v4
         with:
           name: pickbooks-android-apk
@@ -47,7 +71,7 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - run: flutter build ios --release --no-codesign
+      - run: flutter build ios --release --no-codesign --dart-define=YES24_PROXY_URL=${{ vars.YES24_PROXY_URL }}
       - name: Package unsigned IPA
         run: |
           mkdir -p Payload

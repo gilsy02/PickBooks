@@ -35,7 +35,15 @@ class _Yes24SettingsScreenState extends State<Yes24SettingsScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('도서 검색 설정')),
       body: ListView(padding: const EdgeInsets.all(20), children: [
-        const Text('YES24 Open API 키', style: TextStyle(fontWeight: FontWeight.w700)),
+        if (hasYes24Proxy)
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(color: PB.primarySoft, borderRadius: BorderRadius.circular(12)),
+            child: const Text('기본 검색 서버가 연결되어 있어 키 없이 검색할 수 있어요. 아래 개인 키는 넣지 않아도 돼요.',
+                style: TextStyle(color: PB.primary, height: 1.5)),
+          ),
+        const Text('YES24 Open API 키 (선택)', style: TextStyle(fontWeight: FontWeight.w700)),
         const SizedBox(height: 6),
         const Text(
           '1. developers.yes24.com 에 YES24 계정으로 로그인\n2. API Key 발급 메뉴에서 약관 동의 후 즉시 발급\n3. 받은 키를 아래에 붙여 넣기',

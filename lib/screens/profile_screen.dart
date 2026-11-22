@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../insights.dart';
 import '../models.dart';
 import '../store.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import '../services/yes24.dart';
 import 'yes24_settings_screen.dart';
+
+const kAppVersion = '0.3.0';
+const kPrivacyPolicyUrl = 'https://github.com/gilsy02/PickBooks/blob/HEAD/docs/privacy-policy.md';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -55,7 +60,7 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _tile(context, Icons.auto_stories_outlined, '픽북스가 본 나', '어떤 책을, 어떻게 읽는 독자인지',
               () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReaderProfileScreen()))),
-          _tile(context, Icons.key_rounded, '도서 검색 설정', store.yes24Key.isEmpty ? 'YES24 키를 넣으면 검색·바코드로 책을 담을 수 있어요' : 'YES24 키 연결됨',
+          _tile(context, Icons.key_rounded, '도서 검색 설정', hasYes24Proxy ? '기본 검색 서버 연결됨' : (store.yes24Key.isEmpty ? 'YES24 키를 넣으면 검색·바코드로 책을 담을 수 있어요' : 'YES24 키 연결됨'),
               () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Yes24SettingsScreen()))),
           _tile(context, Icons.ios_share_rounded, '내 기록 내보내기', '모든 기록을 파일(JSON)로 공유해 백업해요',
               () => SharePlus.instance.share(ShareParams(text: store.exportJson(), subject: '픽북스 백업'))),
@@ -65,8 +70,12 @@ class ProfileScreen extends StatelessWidget {
           _tile(context, Icons.delete_outline_rounded, '모든 기록 지우기', '샘플을 지우고 내 서재를 새로 시작해요', () async {
             if (await _confirm(context, '서재, 문장, 아이 책장이 모두 지워져요. 되돌릴 수 없어요.')) store.resetAll();
           }),
+          _tile(context, Icons.privacy_tip_outlined, '개인정보처리방침', '어떤 정보를 어디에 저장하는지',
+              () => launchUrl(Uri.parse(kPrivacyPolicyUrl), mode: LaunchMode.externalApplication)),
+          _tile(context, Icons.article_outlined, '오픈소스 라이선스', '앱에 쓰인 글꼴과 소프트웨어',
+              () => showLicensePage(context: context, applicationName: '픽북스', applicationVersion: kAppVersion)),
           const SizedBox(height: 24),
-          const Center(child: Text('픽북스 0.1.0 · 기록은 이 휴대폰에만 저장돼요', style: TextStyle(fontSize: 12, color: PB.muted))),
+          const Center(child: Text('픽북스 $kAppVersion · 기록은 이 휴대폰에만 저장돼요', style: TextStyle(fontSize: 12, color: PB.muted))),
         ]);
       },
     );

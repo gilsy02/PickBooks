@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'kids/kids_shell.dart';
 import 'screens/home_screen.dart';
@@ -10,6 +12,16 @@ import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // 글꼴(OFL) 라이선스를 "오픈소스 라이선스" 화면에 등록
+  LicenseRegistry.addLicense(() async* {
+    for (final (pkg, file) in [
+      ('고운바탕 (Gowun Batang)', 'gowunbatang'),
+      ('나눔손글씨 펜 (Nanum Pen Script)', 'nanumpenscript'),
+      ('나눔손글씨 붓 (Nanum Brush Script)', 'nanumbrushscript'),
+    ]) {
+      yield LicenseEntryWithLineBreaks([pkg], await rootBundle.loadString('assets/licenses/$file-OFL.txt'));
+    }
+  });
   await store.load();
   runApp(const PickBooksApp());
 }

@@ -4,6 +4,7 @@ import '../store.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import 'kid_book_screens.dart';
+import 'kids_room_banner.dart';
 
 class KidsShelfScreen extends StatefulWidget {
   const KidsShelfScreen({super.key});
@@ -51,7 +52,7 @@ class _KidsShelfScreenState extends State<KidsShelfScreen> {
                     child: ShaderMask(
                       shaderCallback: (r) => const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.black, Colors.black, Colors.transparent], stops: [0, 0.7, 1]).createShader(r),
                       blendMode: BlendMode.dstIn,
-                      child: Image.asset('assets/images/kids_room.jpg', fit: BoxFit.cover),
+                      child: const KidsRoomBanner(),
                     ),
                   ),
                   Positioned(

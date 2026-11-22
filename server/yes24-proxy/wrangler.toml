@@ -1,0 +1,4 @@
+name = "pickbooks-yes24-proxy"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+# YES24 키는 여기 적지 말고: npx wrangler secret put YES24_API_KEY

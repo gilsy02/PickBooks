@@ -69,7 +69,7 @@ class _BookSearchViewState extends State<BookSearchView> {
     return ListenableBuilder(
       listenable: store,
       builder: (context, _) {
-        if (store.yes24Key.isEmpty) return const NeedKeyCard();
+        if (!Yes24Api.available(store.yes24Key)) return const NeedKeyCard();
         return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           TextField(
             controller: ctrl,
@@ -180,7 +180,7 @@ class _BarcodeViewState extends State<BarcodeView> {
 
   @override
   Widget build(BuildContext context) {
-    if (store.yes24Key.isEmpty) return const NeedKeyCard();
+    if (!Yes24Api.available(store.yes24Key)) return const NeedKeyCard();
     if (kIsWeb) {
       return const Padding(padding: EdgeInsets.all(24), child: Text('바코드는 휴대폰 앱에서 쓸 수 있어요.', textAlign: TextAlign.center));
     }

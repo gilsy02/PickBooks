@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models.dart';
 import '../store.dart';
 import '../theme.dart';
@@ -57,6 +58,14 @@ class BookDetailScreen extends StatelessWidget {
                 textAlign: TextAlign.center, style: const TextStyle(color: PB.muted)),
             if (b.isbn != null)
               const Padding(padding: EdgeInsets.only(top: 6), child: Text('도서 정보 제공: 예스24', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: PB.muted))),
+            if (b.link != null && b.link!.startsWith('https://'))
+              Center(
+                child: TextButton.icon(
+                  onPressed: () => launchUrl(Uri.parse(b.link!), mode: LaunchMode.externalApplication),
+                  icon: const Icon(Icons.open_in_new, size: 16),
+                  label: const Text('예스24에서 보기'),
+                ),
+              ),
             const SizedBox(height: 20),
             Wrap(alignment: WrapAlignment.center, spacing: 8, children: [
               for (final s in BookStatus.values)

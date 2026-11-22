@@ -54,19 +54,34 @@ class Yes24Exception implements Exception {
   String toString() => message;
 }
 
-/// https://apis.yes24.com  (X-Api-Key 헤더 인증)
-/// 키는 앱 설정에 사용자가 직접 넣는다. 공개 저장소·설치 파일에는 넣지 않는다.
+/// 출시판: 빌드 때 넣는 중계 서버 주소(YES24_PROXY_URL). 키는 서버에만 있다.
+/// 테스트판: 중계 서버가 없으면 사용자가 설정에 넣은 개인 키로 YES24를 직접 부른다.
+const kYes24ProxyUrl = String.fromEnvironment('YES24_PROXY_URL');
+bool get hasYes24Proxy => kYes24ProxyUrl.startsWith('https://');
+
 class Yes24Api {
   static const _base = 'apis.yes24.com';
   final String apiKey;
   final http.Client _client;
   Yes24Api(this.apiKey, {http.Client? client}) : _client = client ?? http.Client();
 
+  /// 검색을 쓸 수 있는 상태인지 (중계 서버가 있거나 개인 키가 있음)
+  static bool available(String userKey) => hasYes24Proxy || userKey.trim().isNotEmpty;
+
   Future<Map<String, dynamic>> _get(String path, Map<String, String> q) async {
-    if (apiKey.trim().isEmpty) throw Yes24Exception('YES24 키가 없어요. 프로필 > 도서 검색 설정에서 넣어 주세요.');
-    final res = await _client
-        .get(Uri.https(_base, path, q), headers: {'X-Api-Key': apiKey.trim(), 'Accept': 'application/json'})
-        .timeout(const Duration(seconds: 12));
+    final useKey = apiKey.trim().isNotEmpty;
+    if (!useKey && !hasYes24Proxy) throw Yes24Exception('YES24 키가 없어요. 프로필 > 도서 검색 설정에서 넣어 주세요.');
+    final Uri uri;
+    final headers = <String, String>{'Accept': 'application/json'};
+    if (useKey) {
+      uri = Uri.https(_base, path, q);
+      headers['X-Api-Key'] = apiKey.trim();
+    } else {
+      final base = Uri.parse(kYes24ProxyUrl);
+      uri = base.replace(path: path, queryParameters: q);
+      headers['X-PickBooks-App'] = '1';
+    }
+    final res = await _client.get(uri, headers: headers).timeout(const Duration(seconds: 12));
     Map<String, dynamic>? body;
     try {
       body = jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;

@@ -292,14 +292,15 @@ class AppStore extends ChangeNotifier {
       b('노인과 바다', '어니스트 헤밍웨이', '민음사', BookStatus.done, total: 152, cat: '소설', daysAgo: 40),
       b('여행의 이유', '김영하', '문학동네', BookStatus.done, total: 216, cat: '에세이', daysAgo: 30),
       b('달러구트 꿈 백화점', '이미예', '팩토리나인', BookStatus.done, total: 300, cat: '소설', daysAgo: 20),
+      b('하늘과 바람과 별과 시', '윤동주', '정음사', BookStatus.done, total: 120, cat: '시', daysAgo: 35),
     ];
     for (final x in books.where((x) => x.status == BookStatus.done)) {
       x.currentPage = x.totalPages;
     }
-    final demian = books.firstWhere((x) => x.title == '데미안');
+    final poem = books.firstWhere((x) => x.title == '하늘과 바람과 별과 시');
     quotes = [
-      Quote(id: newId(), bookId: demian.id, text: '새는 알에서 나오려고 투쟁한다. 알은 세계이다. 태어나려는 자는 하나의 세계를 깨뜨려야 한다.',
-          thought: '깨뜨린다는 말이 오래 남았다. 나도 지금 내 알을 깨고 있는 중일까.', createdAt: now.subtract(const Duration(days: 33))),
+      Quote(id: newId(), bookId: poem.id, text: '죽는 날까지 하늘을 우러러 한 점 부끄럼이 없기를, 잎새에 이는 바람에도 나는 괴로워했다.',
+          thought: '(예시) 담은 문장 아래에 그때의 생각을 이렇게 적어 두세요.', createdAt: now.subtract(const Duration(days: 33))),
     ];
     final haru = Child(id: newId(), name: '하루');
     final seojun = Child(id: newId(), name: '서준');

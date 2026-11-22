@@ -16,7 +16,7 @@ class AddBookScreen extends StatefulWidget {
 }
 
 class _AddBookScreenState extends State<AddBookScreen> {
-  late int tab = store.yes24Key.isEmpty ? 2 : 0;
+  late int tab = Yes24Api.available(store.yes24Key) ? 0 : 2;
   final title = TextEditingController();
   final author = TextEditingController();
   final publisher = TextEditingController();
