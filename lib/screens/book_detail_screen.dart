@@ -55,6 +55,8 @@ class BookDetailScreen extends StatelessWidget {
             const SizedBox(height: 6),
             Text([b.author, b.publisher].where((e) => e.isNotEmpty).join('  |  '),
                 textAlign: TextAlign.center, style: const TextStyle(color: PB.muted)),
+            if (b.isbn != null)
+              const Padding(padding: EdgeInsets.only(top: 6), child: Text('도서 정보 제공: 예스24', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: PB.muted))),
             const SizedBox(height: 20),
             Wrap(alignment: WrapAlignment.center, spacing: 8, children: [
               for (final s in BookStatus.values)

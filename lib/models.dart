@@ -17,6 +17,8 @@ class Book {
   String publisher;
   String? coverUrl;
   String? coverPath;
+  String? spineUrl;
+  String? link;
   String? isbn;
   String category;
   int totalPages;
@@ -34,6 +36,8 @@ class Book {
     this.publisher = '',
     this.coverUrl,
     this.coverPath,
+    this.spineUrl,
+    this.link,
     this.isbn,
     this.category = '',
     this.totalPages = 0,
@@ -50,7 +54,7 @@ class Book {
 
   Map<String, dynamic> toJson() => {
         'id': id, 'title': title, 'author': author, 'publisher': publisher,
-        'coverUrl': coverUrl, 'coverPath': coverPath, 'isbn': isbn, 'category': category,
+        'coverUrl': coverUrl, 'coverPath': coverPath, 'spineUrl': spineUrl, 'link': link, 'isbn': isbn, 'category': category,
         'totalPages': totalPages, 'currentPage': currentPage, 'status': status.name,
         'addedAt': addedAt.toIso8601String(), 'finishedAt': finishedAt?.toIso8601String(),
         'rating': rating, 'colorSeed': colorSeed,
@@ -58,7 +62,7 @@ class Book {
 
   factory Book.fromJson(Map<String, dynamic> j) => Book(
         id: j['id'], title: j['title'], author: j['author'] ?? '', publisher: j['publisher'] ?? '',
-        coverUrl: j['coverUrl'], coverPath: j['coverPath'], isbn: j['isbn'], category: j['category'] ?? '',
+        coverUrl: j['coverUrl'], coverPath: j['coverPath'], spineUrl: j['spineUrl'], link: j['link'], isbn: j['isbn'], category: j['category'] ?? '',
         totalPages: j['totalPages'] ?? 0, currentPage: j['currentPage'] ?? 0,
         status: BookStatus.values.byName(j['status'] ?? 'want'),
         addedAt: _dt(j['addedAt']), finishedAt: _dt(j['finishedAt']),

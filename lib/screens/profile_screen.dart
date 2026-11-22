@@ -5,6 +5,7 @@ import '../models.dart';
 import '../store.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
+import 'yes24_settings_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -54,6 +55,8 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 12),
           _tile(context, Icons.auto_stories_outlined, '픽북스가 본 나', '어떤 책을, 어떻게 읽는 독자인지',
               () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ReaderProfileScreen()))),
+          _tile(context, Icons.key_rounded, '도서 검색 설정', store.yes24Key.isEmpty ? 'YES24 키를 넣으면 검색·바코드로 책을 담을 수 있어요' : 'YES24 키 연결됨',
+              () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Yes24SettingsScreen()))),
           _tile(context, Icons.ios_share_rounded, '내 기록 내보내기', '모든 기록을 파일(JSON)로 공유해 백업해요',
               () => SharePlus.instance.share(ShareParams(text: store.exportJson(), subject: '픽북스 백업'))),
           _tile(context, Icons.restart_alt_rounded, '샘플 데이터로 되돌리기', '처음 보던 예시 서재로 바꿔요', () async {

@@ -5,6 +5,11 @@ plugins {
 }
 
 android {
+    // 릴리스 빌드 중 lint 도구 충돌(JDK API 불일치)로 빌드가 멈추는 것을 막는다.
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
     namespace = "com.pickbooks.pickbooks"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion

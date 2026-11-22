@@ -3,6 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import '../models.dart';
 import '../store.dart';
 import '../theme.dart';
+import '../services/yes24.dart';
+import '../widgets/book_finder.dart';
 import '../widgets/common.dart';
 
 class AreaChips extends StatelessWidget {
@@ -36,6 +38,26 @@ class _KidBookEditScreenState extends State<KidBookEditScreen> {
   late bool toRead = widget.toRead;
   final areas = <String>{};
   String? coverPath;
+  String? coverUrl;
+
+  Future<void> _search() async {
+    final y = await Navigator.push<Yes24Book>(
+      context,
+      MaterialPageRoute(
+        builder: (ctx) => Scaffold(
+          appBar: AppBar(title: const Text('책 찾기')),
+          body: ListView(padding: const EdgeInsets.all(20), children: [BookSearchView(onPick: (b) => Navigator.pop(ctx, b))]),
+        ),
+      ),
+    );
+    if (y == null) return;
+    setState(() {
+      title.text = y.title;
+      author.text = y.author;
+      coverUrl = y.cover;
+      coverPath = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,14 +65,16 @@ class _KidBookEditScreenState extends State<KidBookEditScreen> {
     return Scaffold(
       appBar: AppBar(title: Text('${child?.name ?? ''} 책장에 담기')),
       body: ListView(padding: const EdgeInsets.fromLTRB(20, 8, 20, 40), children: [
+        OutlinedButton.icon(onPressed: _search, icon: const Icon(Icons.search), label: const Text('YES24에서 찾아 채우기')),
+        const SizedBox(height: 14),
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           GestureDetector(
             onTap: () async {
               final x = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 800);
               if (x != null) setState(() => coverPath = x.path);
             },
-            child: coverPath != null
-                ? BookCover(title: title.text, path: coverPath, url: coverPath, seed: 0, width: 96, height: 126)
+            child: coverPath != null || coverUrl != null
+                ? BookCover(title: title.text, path: coverPath, url: coverUrl ?? coverPath, seed: 0, width: 96, height: 126)
                 : Container(
                     width: 96, height: 126,
                     decoration: BoxDecoration(color: PB.card, borderRadius: BorderRadius.circular(8), border: Border.all(color: PB.line)),
@@ -93,6 +117,7 @@ class _KidBookEditScreenState extends State<KidBookEditScreen> {
               title: title.text.trim(),
               author: author.text.trim(),
               coverPath: coverPath,
+              coverUrl: coverUrl,
               toRead: toRead,
               readDates: toRead ? [] : [DateTime.now()],
               areas: areas,

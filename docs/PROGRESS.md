@@ -26,3 +26,13 @@
 | 커플 공유 | 서버 필요 | Supabase/Firebase 동기화 (계정·공유 서재) |
 | 아이폰 설치 | 애플 서명 필요 | 무료 Apple ID+Sideloadly(7일마다 재서명) / 개발자 계정 연 99달러(TestFlight) / 웹앱 |
 | AI 추천·분석 | 제외(사용자 결정) | 규칙 기반으로 자리 마련해 둠 |
+
+## 2026-11-22 · v0.2.0 (YES24 연동, 빌드 수정)
+- 알라딘 Open API 종료(2026-10-30) 확인 → YES24 Open API로 교체 (docs/research/book-api.md)
+- 책 담기: 검색(YES24 itemList), 바코드(mobile_scanner, EAN-13 → itemDetail ISBN13)
+- 표지·책등(sideCover)·쪽수·관리분류 자동 채움, 중복 ISBN 막기, "도서 정보 제공: 예스24" 표기
+- 키즈 책 담기에 YES24 검색
+- 키는 앱 설정(프로필 > 도서 검색 설정)에 사용자가 입력, 기기에만 저장. 공개 저장소·APK에 넣지 않음
+  (공개 저장소의 Actions 산출물은 누구나 받을 수 있어 키를 넣으면 유출됨)
+- 빌드 실패 원인: Android lint가 JDK 17에서 충돌(List.removeLast NoSuchMethodError) → CI JDK 21, 릴리스 lint 비활성화
+- 미검증: YES24 실제 응답(작업 환경에서 apis.yes24.com 접속 차단, 키 없음). 응답 형식은 공식 샘플 저장소 yes24-AX/yes24-openapi-samples 기준

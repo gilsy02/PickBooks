@@ -297,6 +297,14 @@ class _Spine extends StatelessWidget {
     final dark = c.computeLuminance() < 0.4;
     final h = 112.0 + (book.colorSeed.abs() % 34);
     final w = 26.0 + (book.colorSeed.abs() % 7);
+    if (book.spineUrl != null) {
+      return Container(
+        width: w,
+        height: 140,
+        decoration: const BoxDecoration(boxShadow: [BoxShadow(color: Color(0x40000000), blurRadius: 3, offset: Offset(1, 2))]),
+        child: Image.network(book.spineUrl!, fit: BoxFit.fill, errorBuilder: (_, _, _) => Container(color: c)),
+      );
+    }
     return Container(
       width: w,
       height: h,

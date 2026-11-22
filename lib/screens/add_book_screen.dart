@@ -3,6 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import '../models.dart';
 import '../store.dart';
 import '../theme.dart';
+import '../services/yes24.dart';
+import '../widgets/book_finder.dart';
 import '../widgets/common.dart';
 
 /// 책 담기: 검색 / 바코드 / 직접 입력
@@ -14,7 +16,7 @@ class AddBookScreen extends StatefulWidget {
 }
 
 class _AddBookScreenState extends State<AddBookScreen> {
-  int tab = 2;
+  late int tab = store.yes24Key.isEmpty ? 2 : 0;
   final title = TextEditingController();
   final author = TextEditingController();
   final publisher = TextEditingController();
@@ -26,6 +28,65 @@ class _AddBookScreenState extends State<AddBookScreen> {
   Future<void> _pickCover() async {
     final x = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 800);
     if (x != null) setState(() => coverPath = x.path);
+  }
+
+  Future<void> _pickedFromApi(Yes24Book y) async {
+    if (store.hasIsbn(y.isbn13)) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('「${y.title}」은(는) 이미 서재에 있어요.')));
+      return;
+    }
+    final chosen = await showModalBottomSheet<BookStatus>(
+      context: context,
+      backgroundColor: PB.card,
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              BookCover(title: y.title, url: y.cover, seed: y.title.hashCode, width: 70, height: 100),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(y.title, style: const TextStyle(fontFamily: PB.serif, fontSize: 18, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 6),
+                  Text([y.author, y.publisher].where((e) => e.isNotEmpty).join(' · '), style: const TextStyle(color: PB.muted)),
+                  if (y.pages > 0) Text('${y.pages}쪽', style: const TextStyle(color: PB.muted)),
+                ]),
+              ),
+            ]),
+            const SizedBox(height: 18),
+            const Align(alignment: Alignment.centerLeft, child: Text('어느 칸에 꽂을까요?', style: TextStyle(fontWeight: FontWeight.w700))),
+            const SizedBox(height: 10),
+            Row(children: [
+              for (final s in BookStatus.values)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: FilledButton.tonal(onPressed: () => Navigator.pop(ctx, s), child: Text(s.label, style: const TextStyle(fontSize: 13))),
+                  ),
+                ),
+            ]),
+          ]),
+        ),
+      ),
+    );
+    if (chosen == null || !mounted) return;
+    store.addBook(Book(
+      id: newId(),
+      title: y.title,
+      author: y.author,
+      publisher: y.publisher,
+      coverUrl: y.cover,
+      spineUrl: y.sideCover,
+      link: y.link,
+      isbn: y.isbn13,
+      category: y.category,
+      totalPages: y.pages,
+      currentPage: chosen == BookStatus.done ? y.pages : 0,
+      status: chosen,
+      finishedAt: chosen == BookStatus.done ? DateTime.now() : null,
+    ));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('「${y.title}」을(를) ${chosen.label} 칸에 꽂았어요.')));
   }
 
   void _save() {
@@ -61,7 +122,12 @@ class _AddBookScreenState extends State<AddBookScreen> {
           onChanged: (i) => setState(() => tab = i),
         ),
         const SizedBox(height: 20),
-        if (tab != 2) _ComingSoon(barcode: tab == 1, onManual: () => setState(() => tab = 2)) else ..._manual(),
+        if (tab == 0)
+          BookSearchView(onPick: _pickedFromApi, isAdded: (b) => store.hasIsbn(b.isbn13))
+        else if (tab == 1)
+          BarcodeView(onPick: _pickedFromApi)
+        else
+          ..._manual(),
       ]),
     );
   }
@@ -122,29 +188,4 @@ class _AddBookScreenState extends State<AddBookScreen> {
           child: const Text('서재에 꽂기', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
         ),
       ];
-}
-
-class _ComingSoon extends StatelessWidget {
-  final bool barcode;
-  final VoidCallback onManual;
-  const _ComingSoon({required this.barcode, required this.onManual});
-  @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(color: PB.card, borderRadius: BorderRadius.circular(16), border: Border.all(color: PB.line)),
-        child: Column(children: [
-          Icon(barcode ? Icons.qr_code_scanner : Icons.search, size: 44, color: PB.primary),
-          const SizedBox(height: 12),
-          Text(barcode ? '바코드로 담기는 준비 중이에요' : '책 검색은 준비 중이에요',
-              style: const TextStyle(fontFamily: PB.serif, fontSize: 17, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 8),
-          Text(
-            barcode ? '책 뒷면 바코드(ISBN)를 찍으면 제목과 표지를 자동으로 채워 드릴 예정이에요.' : '도서 검색 키를 연결하면 제목만 쳐도 표지와 쪽수까지 채워 드릴 예정이에요.',
-            textAlign: TextAlign.center,
-            style: const TextStyle(color: PB.muted, height: 1.5),
-          ),
-          const SizedBox(height: 16),
-          OutlinedButton(onPressed: onManual, child: const Text('직접 입력으로 담기')),
-        ]),
-      );
 }

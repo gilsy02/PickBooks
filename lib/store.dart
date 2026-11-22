@@ -15,6 +15,7 @@ class AppStore extends ChangeNotifier {
   SharedPreferences? _prefs;
 
   String nickname = '책읽는하루';
+  String yes24Key = '';
   List<Book> books = [];
   List<Quote> quotes = [];
   List<Child> children = [];
@@ -32,6 +33,7 @@ class AppStore extends ChangeNotifier {
     } else {
       final j = jsonDecode(raw) as Map<String, dynamic>;
       nickname = j['nickname'] ?? nickname;
+      yes24Key = j['yes24Key'] ?? '';
       books = (j['books'] as List).map((e) => Book.fromJson(e)).toList();
       quotes = (j['quotes'] as List).map((e) => Quote.fromJson(e)).toList();
       children = (j['children'] as List).map((e) => Child.fromJson(e)).toList();
@@ -47,6 +49,7 @@ class AppStore extends ChangeNotifier {
         _key,
         jsonEncode({
           'nickname': nickname,
+          'yes24Key': yes24Key,
           'books': books.map((e) => e.toJson()).toList(),
           'quotes': quotes.map((e) => e.toJson()).toList(),
           'children': children.map((e) => e.toJson()).toList(),
@@ -65,6 +68,13 @@ class AppStore extends ChangeNotifier {
     kidsMode = v;
     notifyListeners();
   }
+
+  void setYes24Key(String v) {
+    yes24Key = v.trim();
+    _changed();
+  }
+
+  bool hasIsbn(String? isbn) => isbn != null && isbn.isNotEmpty && books.any((b) => b.isbn == isbn);
 
   void setNickname(String v) {
     nickname = v;
