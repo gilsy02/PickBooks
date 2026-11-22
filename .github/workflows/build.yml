@@ -26,8 +26,6 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
 
   ios:
-    # macOS 실행 시간은 무료 한도에서 10배로 차감되므로 수동 실행할 때만 돈다.
-    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
