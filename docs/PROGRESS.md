@@ -36,3 +36,6 @@
   (공개 저장소의 Actions 산출물은 누구나 받을 수 있어 키를 넣으면 유출됨)
 - 빌드 실패 원인: Android lint가 JDK 17에서 충돌(List.removeLast NoSuchMethodError) → CI JDK 21, 릴리스 lint 비활성화
 - 미검증: YES24 실제 응답(작업 환경에서 apis.yes24.com 접속 차단, 키 없음). 응답 형식은 공식 샘플 저장소 yes24-AX/yes24-openapi-samples 기준
+- 저장소 공개 전환(사용자) → 아이폰 빌드 자동 실행 재개. 빌드 #5(안드로이드·아이폰), #6 성공
+- 휴대폰용 고정 다운로드: https://github.com/gilsy02/PickBooks/releases/download/latest/pickbooks.apk (사전 공개 릴리스라 /releases/latest/ 주소는 404)
+- APK 77MB(모든 CPU용 통합). 추후 --split-per-abi로 줄일 수 있음
