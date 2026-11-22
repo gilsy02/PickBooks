@@ -5,6 +5,9 @@ on:
     branches: ['**']
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   android:
     runs-on: ubuntu-latest
@@ -24,6 +27,16 @@ jobs:
         with:
           name: pickbooks-android-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+      # 휴대폰에서 바로 받을 수 있게 고정 주소의 릴리스에 APK를 올린다 (압축 없이).
+      - name: Copy APK with fixed name
+        run: cp build/app/outputs/flutter-apk/app-release.apk pickbooks.apk
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: 최신 테스트 버전
+          prerelease: true
+          body: "휴대폰에서 pickbooks.apk 를 눌러 받은 뒤 설치하세요. 코드를 올릴 때마다 자동으로 바뀝니다."
+          files: pickbooks.apk
 
   ios:
     runs-on: macos-latest
