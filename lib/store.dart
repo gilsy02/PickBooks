@@ -297,15 +297,9 @@ class AppStore extends ChangeNotifier {
       x.currentPage = x.totalPages;
     }
     final demian = books.firstWhere((x) => x.title == '데미안');
-    final almond = books.firstWhere((x) => x.title == '아몬드');
-    final walden = books.firstWhere((x) => x.title == '여행의 이유');
     quotes = [
       Quote(id: newId(), bookId: demian.id, text: '새는 알에서 나오려고 투쟁한다. 알은 세계이다. 태어나려는 자는 하나의 세계를 깨뜨려야 한다.',
           thought: '깨뜨린다는 말이 오래 남았다. 나도 지금 내 알을 깨고 있는 중일까.', createdAt: now.subtract(const Duration(days: 33))),
-      Quote(id: newId(), bookId: almond.id, text: '누구도 완벽하게 이해받을 수는 없다. 그래도 우리는 서로를 향해 손을 뻗는다.',
-          thought: '이해보다 손을 뻗는 쪽이 먼저일지도.', createdAt: now.subtract(const Duration(days: 80))),
-      Quote(id: newId(), bookId: walden.id, text: '여행은 나를 낯선 곳에 데려다 놓고, 비로소 나를 보게 한다.',
-          thought: '', createdAt: now.subtract(const Duration(days: 25))),
     ];
     final haru = Child(id: newId(), name: '하루');
     final seojun = Child(id: newId(), name: '서준');
